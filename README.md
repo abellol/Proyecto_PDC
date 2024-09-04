@@ -532,3 +532,205 @@ Su descifrado es simplemente revertir los pasos ya hechos, el único requisito e
     m[Unir las letras de cada fila] --> n[/Retornar el mensaje desencriptado/]
     n --> z([Fin])
 ```
+## XOR
+
+Este cifrado usa la logica XOR entre un mensaje y una clave para cifrar el mensaje
+
+```mermaid
+    flowchart TD
+        A([Cifrar mensaje con cifrado XOR]) --> B
+        B[/Imprimir "Escriba el mensaje para encriptar"/] -->C
+        C[/Leer msg/]-->D
+        D[/Imprimir "Ingrese la clave para encripción"/]-->E
+        E[/Leer key/]-->F
+        F[Convertir de msg a binario]-->G
+        G[Convertir de key a binario]-->H
+        H[Separar msg en una lista]-->I
+        I[Separar key en una lista]-->J
+        J[Inicializar i=0]-->K
+        K[Inicializar j=0]-->L
+        L{i < cantidad de elementos en msg}
+        L-- SI -->M
+        L-- NO -->T
+        M{msg i = key j}
+        M-- SI -->N
+        M-- NO -->O
+        N[Agregar 0 a lista msg_enc]
+        O[Agregar 1 a lista msg_enc]
+        N-->P
+        O-->P
+        P[i= i+1]-->Q
+        Q{j= cantidad de elementos en key}
+        Q -- SI -->R
+        Q-- NO -->S
+        R[j = -1]-->S
+        S[j= j+1]-->L
+        T[Unión de msg_enc en un string]-->U
+        U[Convertir de msg_enc a alfanumerico]-->V
+        V[Retornar msg_enc]-->W([ ])
+```
+
+Para descifrar hay que inferir el bit original de acuerdi a la logica XOR
+
+```mermaid
+    flowchart TD
+        A([Descifrar mensaje con cifrado XOR]) --> B
+        B[/Escribir "Ingresa el mensaje cifrado"/]-->C
+        C[/Leer enc/]-->D
+        D[Convertir enc a binario]-->E
+        E[Separar enc en la lista enc]-->F
+        F[/Escribir "Ingrese la clave"/]-->G
+        G[/Leer key/]-->H
+        H[Convertir key a binario]-->I
+        I[Separar key en la lista key]-->J
+        J[Inicializar i=0]-->K
+        K[Inicializar j=0]-->L
+        L{i< cantidad de elementos en enc}
+        L-- SI -->M
+        L-- NO -->X
+        M{enc i = 0}
+        M-- SI-->N
+        M-- NO -->Q
+        N{key j = 0}
+        N-- SI-->O
+        N-- NO -->P
+        O[Añadir 1 a la lista dec]-->T
+        P[Añadir 0 a la lista dec]-->T
+        Q{key j=1}
+        Q-- SI -->R
+        Q-- NO -->S
+        R[Añadir 1 a la lista dec]-->T
+        S[Añadir 0 a la lista dec]-->T
+        T[i=i+1]-->U
+        U{j= cantidad de elementos en key}
+        U -- SI -->V
+        U-- NO -->W
+        V[j = -1]-->W
+        W[j=j+1]-->L
+        X[Unión de dec en un string]-->Y
+        Y[Convertir dec a alfanumerico]-->Z
+        Z[Retornar dec]-->AA
+        AA([ ])
+```
+
+## Bifid
+
+Cifrado por transposición utilizando la matriz de polybius como base
+
+```mermaid
+    flowchart TD
+        A([Cifrar mensaje con cifrado Bifid]) --> B
+        B[/Escribir "Escriba el mensaje para encriptar"/]-->C
+        C[/Leer msg/]-->DA
+        DA[/Escribir "Escriba la clave"/]-->DB
+        DB[/Leer key/]-->DC
+        DC[[Crear Matriz Personalizada con la clave]]-->D
+        D[Separar msg en una lista de letras msg]-->E
+        E[Inicializar i=0]-->F
+        F{i < cantidad de elementos en msg}
+        F-- SI -->G
+        F-- NO -->K
+        G[Buscar la letra en la matriz de Polybius personalizada]-->H
+        H[Guardar 1ra coordenada en lista x]-->I
+        I[Guardar 2da coordenada en lista y]-->J
+        J[i=i+1]-->F
+        K[Re inicializar i=0]-->L
+        L{i < cantidad de elementos en listas x, y}
+        L-- SI -->M
+        L-- NO -->P
+        M[Añadir xi y xi+1 como elemento i de la lista msg_enc]-->NA
+        NA[Añadir yi y yi+1 como elemento i+1 de la lista msg_enc]-->N
+        N[i= i+2]-->O
+        O[Reemplazar elemento i de msg_enc con su letra correspondiente de la matriz]-->L
+        P[Unir los elementos de la lista msg_enc en un string]-->Q
+        Q[Retornar msg_enc]-->R
+        R([ ])
+```
+
+Se descifrado es simetrico, aunque la manera de operar el str ingresado original cambia
+
+```mermaid
+    flowchart TD
+        A([Descifrar mensaje con cifrado Bifid]) --> B
+        B[/Escribir "Ingresa el mensaje cifrado"/]-->C
+        C[/Leer enc/]-->DA
+        DA[/Escribir "Escriba la clave"/]-->DB
+        DB[/Leer key/]-->DC
+        DC[[Crear Matriz Personalizada con la clave]]-->D
+        D[Separar enc en una lista de letras enc]-->E
+        E[Inicializar i=0]-->F
+        F{i < cantidad de elementos en enc}
+        F-- SI -->G
+        F-- NO -->K
+        G[Buscar la letra en la matriz de Polybius personalizada]-->H
+        H[Guardar 1ra coordenada en lista x]-->I
+        I[Guardar 2da coordenada en lista y]-->J
+        J[i=i+1]-->F
+        K[Re inicializar i=0]-->L
+        L{i < cantidad de elementos en listas x, y}
+        L-- SI -->M
+        L-- NO -->P
+        M[Añadir xi y xi+1 como elemento i de la lista dec]-->NA
+        NA[Añadir yi y yi+1 como elemento i+1 de la lista dec]-->N
+        N[i= i+2]-->O
+        O[Reemplazar elemento i de dec con su letra correspondiente de la matriz]-->L
+        P[Unir los elementos de la lista dec en un string]-->Q
+        Q[Retornar dec]-->R
+        R([ ])
+```
+
+## Porta
+
+Cifrado basado en varios abecedarios
+
+```mermaid
+      flowchart TD
+        A([Cifrar mensaje con cifrado Porta]) --> B
+        B[/Escribir "Escriba el mensaje para encriptar"/]-->C
+        C[/Leer msg/]-->D
+        D[/Escribir "Ingresa la clave"/]-->E
+        E[/Leer key/]-->FA
+        FA[[Crear matriz de abecedarios con la clave]]-->F
+        F[Separar key y msg en listas key y msg]-->G
+        G[Inicializar i,j=0]-->H
+        H{i < elementos en msg}
+        H-- SI-->I
+        H-- NO-->N
+        I[Añadir el elemento corresponndiente al i de msg de la fila j correspondiente a la clave a la lista msg_enc]-->J
+        J[i=i+1]-->K
+        K{j=Cantidad de elementos en key}
+        K-- SI-->L
+        K-- NO -->M
+        L[j=-1]-->M
+        M[j=j+1]-->H
+        N[Unir msg_enc en un string]-->O
+        O[Retornar msg_enc]-->P
+        P([ ])
+```
+
+Su descifrado es simetrico pero el proceso de busqueda en las listas es inverso
+
+   ```mermaid
+           flowchart TD
+        A([Descifrar mensaje con cifrado Porta]) --> B
+        B[/Escribir "Escriba el mensaje cifrado"/]-->C
+        C[/Leer enc/]-->D
+        D[/Escribir "Ingresa la clave"/]-->E
+        E[/Leer key/]-->FA
+        FA[[Crear matriz de abecedarios con la clave]]-->F
+        F[Separar key y enc en listas key y enc]-->G
+        G[Inicializar i,j=0]-->H
+        H{i < elementos en enc}
+        H-- SI-->I
+        H-- NO-->N
+        I[Añadir el elemento corresponndiente al i de enc del abecedario original de acuerdo a la fila j de key a dec]-->J
+        J[i=i+1]-->K
+        K{j=Cantidad de elementos en key}
+        K-- SI-->L
+        K-- NO -->M
+        L[j=-1]-->M
+        M[j=j+1]-->H
+        N[Unir dec en un string]-->O
+        O[Retornar dec]-->P
+        P([ ])
+```
