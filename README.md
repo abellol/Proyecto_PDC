@@ -162,7 +162,58 @@ flowchart TD
     Z --> AC
     AC --> T
 ```
+## Cifrado Playfair
+Este cifrado es de sustitución poligráfica, cifrando pares de letras en una matriz de 5x5 basada en una palabra clave
 
+```mermaid
+flowchart TD;
+    a([Cifrado de Playfair]) --> b[/Ingresar la clave/]
+    b --> c{¿Tiene letras repetidas?}
+    c -- si ---da[Remover despues de la primera aparición]
+    da --> c
+    c -- no ---db[Generar una matriz 5x5]
+    db --> e[Ingresar a la matriz las letras de la clave desde la primera fila ]
+    e --> f[Ingresar a la matriz el resto del ABC en orden]
+    f --> g[/Ingresar el mensaje a encriptar/]
+    g --> h[Remover espacios]
+    h --> i[Contar cantidad de caracteres]
+    i --> j{¿La cantidad de letras es par?}
+    j -- no ---ka[Agregar x al final del mensaje]-->j
+    j -- si ---kb[Separar en parejas de letras el mensaje]
+    kb --> l{¿Está el mismo elemento en una pareja?}
+    l -- si ---ma[Reemplazar el ultimo por una x] --> l
+    l -- no ---mb{¿Los elementos de la pareja están en la misma fila?}
+    mb -- si --- na[Desplazar cada letra a la derecha en la matriz] --> x[Almacenar la nueva pareja de letras]
+    mb -- no --- nb{¿Los elementos de la pareja están en la misma columna?}
+    nb -- si --- oa[Desplazar cada elemento hacía abajo en la matriz] --> x
+    nb -- no --- ob[Tomar los extremos en la fila del rectangulo formado por las letras] --> x
+    x --> q[Unir las nuevas parejas en orden] --> p[/Retornar el mensaje encriptado/]-->z([fin])
+```
+Por otro lado, su proceso de desencriptación es simplemente aplicar el mismo proceso pero deshaciendo los deplazamientos de los indices de las letras dentro de la matriz.
+```mermaid
+flowchart TD;
+    a([Descifrado de Playfair]) --> b[/Ingresar la clave/]
+    b --> c{¿Tiene letras repetidas?}
+    c -- si ---da[Remover despues de la primera aparición]
+    da --> c
+    c -- no ---db[Generar una matriz 5x5]
+    db --> e[Ingresar a la matriz las letras de la clave desde la primera fila]
+    e --> f[Ingresar a la matriz el resto del ABC en orden]
+    f --> g[/Ingresar el mensaje a desencriptar/]
+    g --> i["Contar cantidad de caracteres(x)"]
+    i --> j[i = 0]
+    j --> j2[j = 0]
+    j2 --> k{¿i == x?}
+    q[Almacenar nuevo par de letras]
+    k --si --- ka[Unir las nuevas parejas]-->y[/Retornar mensaje descifrado/]-->z([FIN])
+    k --no --- kb[Buscar la letra del indice i] -->kc[Buscar la letra del indice j]
+    kc --> l{¿Están en la misma fila?}
+    l -- si --- la[Desplazar una posición hacía la izquierda cada letra]-->q--> p[i=i+1 , j=j+1]-->k
+    l -- no --- lb{¿Están en la misma columna?}
+    lb -- si --- n[Desplazar una posición hacía arriba cada letra] -->q
+    lb -- no --- o[Tomar los extremos en la fila del rectangulo formado por las letras]-->q
+
+```
 ## Cifrado vernam
 Cifrado que se apoya en la operación XOR y equivalencias de letras a números, y que ademas, no posee un proceso para el desencriptado, puesto que mientras se tenga la msima clave de encriptado, se devolvera el mensaje original
 
@@ -241,6 +292,52 @@ flowchart TD
     S --> J
     P --> R
     R --> T
+```
+## Cifrado Alberti´s wheel
+Es uno de los primeros cifrados polialfabeticos, consiste en dos discos (uno contenido en el otro) que poseen un conjunto de letras; la mayoría de veces es el alfabeto y algunos numeros. Para cifrar el mensaje se debe mover el disco interno según una serie de instrucciones dadas por el emisor.
+Para el cifrado se tomaron ambos "discos" como cadenas de texto que van cambiando sus indices según los requisitos del usuario.
+```mermaid
+flowchart TD;
+    a([Cifrado Alberti´s wheel]) --> b[/Ingresar el mensaje/]
+    b --> c[Eliminar espacios] -->x["contar caracteres(u)"] -->d[/"Ingresar el desfase inicial (x)"/]
+    d --> e[/"Ingresar el incremento (y)"/]
+    e --> f[/"Ingresar el periodo de incremento (z)"/]
+    f --> m[/"Ingresar el disco pequeño"/]
+    m --> n[contador periodo =  0]
+    n --> h[i = 0]
+    h --> i{"¿i == (u-1)?"}
+    w[Obtener cada caracter de los indices almacenados]
+    v[Unir los caracteres en el mismo orden]
+    i -- no --- ja[Obtener letra del string en ese indice]
+    i -- si --- w --> v-->y[/Retornar el mensaje encriptado/] -->z
+    ja --> k{¿Letra en rueda pequeña?}
+    k-- si ---la[Obtener indice] 
+    k-- no ---lb[ERROR] -->z([FIN])
+    la --> ñ[Indice - x]--> o{"¿Contador periodo == (z-1)?"}
+    o -- si --- pb[y = 2y] --> pc[Almacenar indice - y] --> pe[contador periodo = 0] --> i
+    o -- no --- pa[Almacenar indice - y] -->pd[contador periodo + 1] -->i
+```
+El descifrado sigue la misma lógica, la única condición es que hay que saber todas las instrucciones y el contenido del "disco pequeño". 
+```mermaid
+flowchart TD;
+    a([Descifrado Alberti´s wheel]) --> b[/Ingresar el mensaje encriptado/]
+    b --> c["contar caracteres(u)"] -->d[/"Ingresar el desfase inicial (x)"/]
+    d --> e[/"Ingresar el incremento (y)"/]
+    e --> f[/"Ingresar el periodo de incremento (z)"/]
+    f --> g[/"Ingresar el disco pequeño"/]   
+    g --> h[contador periodo =  0]
+    h --> i[i = 0]
+    i --> j{"¿i == (u-1)?"}
+    w[Obtener cada caracter de los indices almacenados]
+    v[Unir los caracteres en el mismo orden]
+    j -- no --- ja[Obtener letra del string en ese indice]
+    j -- si --- w --> v-->y[/Retornar el mensaje desencriptado/] -->z
+    ja --> k{¿Letra en rueda pequeña?}
+    k-- si ---la[Obtener indice] 
+    k-- no ---lb[ERROR] -->z([FIN])
+    la --> x[Indice - x] -->o{"¿Contador periodo == (z-1)?"}
+    o -- si --- pb[y = 2y] --> pc[Almacenar indice + y] --> pe[contador periodo = 0] --> i
+    o -- no --- pa[Almacenar indice + y] -->pd[contador periodo + 1] -->i
 ```
 
 ## Cifrado Vigenere
@@ -396,4 +493,42 @@ flowchart TD
     S --> J
     P --> R
     R --> T
+```
+## Columnar Transposition
+Este tipo de cifrado es de trasposición, donde las letras se reordenan según un esquema específico, en este caso es según el orden alfabético de la clave.
+```mermaid
+flowchart TD;
+    a([Cifrado columnar transposition]) --> b[/Ingresar la clave/] --> c["Contar la cantidad de caracteres(x)"]
+    c --> d[/Ingresar el mensaje a encriptar/] --> e[Remover espacios] --> f["Contar la cantidad de caracteres(y)"]
+    f --> g[z = y / x]
+    g -->h{¿x % z == 0?}
+    h -- si --- ia["Crear una matriz (y+1)*x"] -->o
+    h -- no --- ib[Agregar x al final del mensaje] -->f
+    o[i = 0] --> p{"¿i==(x-1)?"}
+    p -- si ---r
+    p -- no ---q[Agregar la letra del indice i de la clave a la primera celda de la primera fila de la matriz] --> s[i += 1] -->p
+    r[j = 0] --> j{"¿ j == (y-1)"}
+    j -- no --- t[Agregar la letra del indice j del mensaje a la matriz] --> j
+    j -- si ---u[Ordenar las columnas según el orden alfabético de la primera fila]-->m
+    m[Unir las letras de cada columna] --> n[/Retornar el mensaje encriptado/]
+    n --> z([Fin])
+```
+Su descifrado es simplemente revertir los pasos ya hechos, el único requisito es conocer la clave con la que fue cifrado el mensaje.
+```mermaid
+ flowchart TD;
+    a([Descifrado Columnar transposition]) --> b[/Ingresar la clave/] --> c["Contar la cantidad de caracteres(x)"]
+    c --> d[/Ingresar el mensaje encriptado/] --> f["Contar la cantidad de caracteres(y)"]
+    e[Ordenar alfabeticamente la clave]
+    f --> g[z = y / x]
+    g -->h{¿x % z == 0?}
+    h -- si --- ia["Crear una matriz (y+1)*x"] -->e -->o
+    h -- no --- ib[Agregar x al final del mensaje] -->f
+    o[i = 0] --> p{"¿i==(x-1)?"}
+    p -- si ---r
+    p -- no ---q[Agregar la letra del indice i de la clave a la primera celda de la primera fila de la matriz] --> s[i += 1] -->p
+    r[j = 0] --> j{"¿ j == (y-1)"}
+    j -- no --- t[Agregar la letra del indice j del mensaje de abajo hacia arriba en cada columna] --> j
+    j -- si ---u[Ordenar las columnas en el orden de la clave original]-->m
+    m[Unir las letras de cada fila] --> n[/Retornar el mensaje desencriptado/]
+    n --> z([Fin])
 ```
