@@ -1,5 +1,52 @@
 # Proyecto_PDC
-Desarrollo del proyecto sobre encriptación de mensajes
+Desarrollo del proyecto sobre encriptación de mensajes. Este proyecto está orientado a la seguridad de envio de mensajes a travpes de cifrados de transposición, logicos y/o polialfabeticos a través de algoritmos de Python
+
+
+
+## Diagrama General
+
+```mermaid
+flowchart TD;
+    a([inicio]) --> b[Ingrese el cifrado que desea usar]
+    b -->c
+    c-- no ---d
+    c-- si ---C
+    d -- no --- e
+    d -- si --- D
+    e -- no --- f
+    e -- si --- E
+    f -- no --- g
+    f -- si --- F
+    g -- no --- h
+    g -- si --- G
+    h -- no --- i
+    h -- si --- H
+    i -- no --- j
+    i -- si --- I
+    j -- no --- k
+    j -- si --- J
+    k -- no --- z([FIN])
+    k -- si --- K
+
+    c{Playfair?}
+    d{Columnar transposition?}
+    e{Albertis wheel?}
+    f{Hill?}
+    g{Vernam?}
+    h{Vigenere?}
+    i{XOR?}
+    j{Bifid?}
+    k{Porta?}
+    C[[Playfair]]
+    D[[Columnar transposition]]
+    E[[Albertis wheel]]
+    F[[Hill]]
+    G[[Vernam]]
+    H[[Vigenere]]
+    I[[XOR]]
+    J[[Bifid]]
+    K[[Porta]]
+```
 ## Cifrado Hill
 Cifrado basado en operación modular, equivalencias de letras a números y operaciones de matrices
 
@@ -733,4 +780,147 @@ Su descifrado es simetrico pero el proceso de busqueda en las listas es inverso
         N[Unir dec en un string]-->O
         O[Retornar dec]-->P
         P([ ])
+```
+# ////////////////////////////////////////
+
+```python
+# CIFRADO VIGENERE
+
+def caracter_a_numero(cadena:str) -> list:
+    cadena.lower()
+    cadena_conv = []
+    for i in range (0,len(cadena)):
+        if ord(cadena[i]) != 32:
+            cambio = ord(cadena[i])-97
+            match cambio:
+                case 144:
+                    cambio = 13
+                case 128:
+                    cambio = 0
+                case 136:
+                    cambio = 4
+                case 140:
+                    cambio = 8
+                case 146:
+                    cambio = 14
+                case 153:
+                    cambio = 20
+                case 156:
+                    cambio = 24
+                case 134:
+                    cambio = 2
+            cadena_conv.append(cambio)
+        else: 
+            cadena_conv.append(" ")
+    return cadena_conv
+
+def numero_a_caracter(cadena:list) -> list:
+    longitud = len(cadena)
+    for i in range (0,longitud):
+        if cadena[i] != " ":
+            cadena.append(chr(cadena[i]+97))
+        else:
+            cadena.append(" ")
+    for i in range (0, longitud):
+        cadena.pop(0)
+    return cadena
+
+def vigenere (cadena:list, clave:list) -> list:
+    cadena_vigenere : list = []
+    j = 0
+    for i in range(0, len(cadena)):
+            ope = 0
+            if cadena[i] != " ":
+                ope = cadena[i] + clave[j]
+                if ope > 25:
+                    ope-= 26
+                cadena_vigenere.append(ope)
+                j += 1
+            else:
+                cadena_vigenere.append(" ")
+            if j >= len(clave): 
+                j = 0
+    cadena_vigenere = numero_a_caracter(cadena_vigenere)
+    cadena_vigenere = "".join(cadena_vigenere)
+    return cadena_vigenere
+
+if __name__ == "__main__":
+    cadena : str = str(input("Por favor, ingrese el texto a cifrar: "))
+    cadena_conv = caracter_a_numero(cadena)
+    clave : str = str(input("Ahora, por favor ingrese la clave bajo la cual se cifrara el texto (una sola cadena sin espacios)"))
+    clave_conv = caracter_a_numero(clave)
+    cifrado =vigenere(cadena_conv, clave_conv)
+    print(f"el texto codificado resultante a partir de la clave {clave} es:")
+    print(cifrado)
+```
+
+```python
+# DESCIFRADO VIGENERE
+
+def caracter_a_numero(cadena:str) -> list:
+    cadena.lower()
+    cadena_conv = []
+    for i in range (0,len(cadena)):
+        if ord(cadena[i]) != 32:
+            cambio = ord(cadena[i])-97
+            match cambio:
+                case 144:
+                    cambio = 13
+                case 128:
+                    cambio = 0
+                case 136:
+                    cambio = 4
+                case 140:
+                    cambio = 8
+                case 146:
+                    cambio = 14
+                case 153:
+                    cambio = 20
+                case 156:
+                    cambio = 24
+                case 134:
+                    cambio = 2
+            cadena_conv.append(cambio)
+        else: 
+            cadena_conv.append(" ")
+    return cadena_conv
+
+def numero_a_caracter(cadena:list) -> list:
+    longitud = len(cadena)
+    for i in range (0,longitud):
+        if cadena[i] != " ":
+            cadena.append(chr(cadena[i]+97))
+        else:
+            cadena.append(" ")
+    for i in range (0, longitud):
+        cadena.pop(0)
+    return cadena
+
+def des_vigenere (cadena:list, clave:list) -> list:
+    cadena_vigenere : list = []
+    j = 0
+    for i in range(0, len(cadena)):
+            ope = 0
+            if cadena[i] != " ":
+                ope = cadena[i] - clave[j]
+                if ope < 0:
+                    ope+= 26
+                cadena_vigenere.append(ope)
+                j += 1
+            else:
+                cadena_vigenere.append(" ")
+            if j >= len(clave): 
+                j = 0
+    cadena_vigenere = numero_a_caracter(cadena_vigenere)
+    cadena_vigenere = "".join(cadena_vigenere)
+    return cadena_vigenere
+
+if __name__ == "__main__":
+    cadena : str = str(input("Por favor, ingrese el texto a descifrar: "))
+    cadena_conv = caracter_a_numero(cadena)
+    clave : str = str(input("Ahora, por favor ingrese la clave bajo la cual se descifrara el texto (una sola cadena sin espacios)"))
+    clave_conv = caracter_a_numero(clave)
+    cifrado =des_vigenere(cadena_conv, clave_conv)
+    print(f"el texto decodificado resultante a partir de la clave {clave} es:")
+    print(cifrado)
 ```
