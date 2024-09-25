@@ -1,8 +1,6 @@
 # Proyecto_PDC
 Desarrollo del proyecto sobre encriptación de mensajes. Este proyecto está orientado a la seguridad de envio de mensajes a travpes de cifrados de transposición, logicos y/o polialfabeticos a través de algoritmos de Python
 
-
-
 ## Diagrama General
 
 ```mermaid
@@ -15,14 +13,10 @@ flowchart TD;
     d -- si --- D
     e -- no --- f
     e -- si --- E
-    f -- no --- g
+    f -- no --- h
     f -- si --- F
-    g -- no --- h
-    g -- si --- G
-    h -- no --- i
+    h -- no --- j
     h -- si --- H
-    i -- no --- j
-    i -- si --- I
     j -- no --- k
     j -- si --- J
     k -- no --- z([FIN])
@@ -32,20 +26,16 @@ flowchart TD;
     d{Columnar transposition?}
     e{Albertis wheel?}
     f{Hill?}
-    g{Vernam?}
     h{Vigenere?}
-    i{XOR?}
     j{Bifid?}
     k{Porta?}
     C[[Playfair]]
     D[[Columnar transposition]]
     E[[Albertis wheel]]
     F[[Hill]]
-    G[[Vernam]]
     H[[Vigenere]]
-    I[[XOR]]
     J[[Bifid]]
-    K[[Porta]]
+    K[[Porta]]
 ```
 ## Cifrado Hill
 Cifrado basado en operación modular, equivalencias de letras a números y operaciones de matrices
@@ -261,85 +251,7 @@ flowchart TD;
     lb -- no --- o[Tomar los extremos en la fila del rectangulo formado por las letras]-->q
 
 ```
-## Cifrado vernam
-Cifrado que se apoya en la operación XOR y equivalencias de letras a números, y que ademas, no posee un proceso para el desencriptado, puesto que mientras se tenga la msima clave de encriptado, se devolvera el mensaje original
 
-```mermaid
-flowchart TD
-    A([CIFRADO VERNAM])
-    subgraph caracteres_a_numeros
-    direction LR
-    E["`Aa
-    Bb
-    Cc
-    ...
-    Zz
-    H o l a
-    U n o `"]
-    F["`0
-    1
-    2
-    ...
-    25
-    7 14 11 0
-    20 13 14`"]
-    E --> F
-    end
-    subgraph relleno_de_cadena
-    H["` cadena: Hola mundo
-    clave: uno`"]
-    I["`H o l a   m u n d o
-    u n o u   n o u n o`"]
-    H --> I
-    end
-    B[/ingreso de la cadena a encriptar/]
-    C[/ingreso de clave para la cadena/]
-    D[repetir la clave hasta completar la longitud de la cadena]
-    G[paso de caracteres a numeros]
-    J[Operacion XOR sobre los binarios de cada caracter]
-    subgraph XOR
-    K["` 7 = 0 0 1 1 1
-    20 = 1 0 1 0 0`"]
-    L[1 0 0 1 1 = 19]
-    K --> L
-    end
-    M["`Paso del valor numerico a caracter
-    19 = t`"]
-    U{¿El valor recibido es mayor a 26?}
-    V[Si]
-    W[No]
-    X[restar 26 al valor recibido]
-    N[se agrega el caracter codificado a una nueva cadena]
-    O{¿ya se codificaron todos los caracteres?}
-    P[Si]
-    Q[No]
-    R[/cadena codificada/]
-    S(siguiente caracter)
-    T([fin])
-
-    A --> B
-    B --> C
-    C --> D
-    D --> relleno_de_cadena
-    relleno_de_cadena --> G
-    G --> caracteres_a_numeros
-    caracteres_a_numeros --> J
-    J --> XOR
-    XOR --> M
-    M --> U
-    U --> V
-    U --> W
-    V --> X
-    X --> N
-    W --> N
-    N --> O
-    O --> P
-    O --> Q
-    Q --> S
-    S --> J
-    P --> R
-    R --> T
-```
 ## Cifrado Alberti´s wheel
 Es uno de los primeros cifrados polialfabeticos, consiste en dos discos (uno contenido en el otro) que poseen un conjunto de letras; la mayoría de veces es el alfabeto y algunos numeros. Para cifrar el mensaje se debe mover el disco interno según una serie de instrucciones dadas por el emisor.
 Para el cifrado se tomaron ambos "discos" como cadenas de texto que van cambiando sus indices según los requisitos del usuario.
@@ -578,86 +490,6 @@ Su descifrado es simplemente revertir los pasos ya hechos, el único requisito e
     j -- si ---u[Ordenar las columnas en el orden de la clave original]-->m
     m[Unir las letras de cada fila] --> n[/Retornar el mensaje desencriptado/]
     n --> z([Fin])
-```
-## XOR
-
-Este cifrado usa la logica XOR entre un mensaje y una clave para cifrar el mensaje
-
-```mermaid
-    flowchart TD
-        A([Cifrar mensaje con cifrado XOR]) --> B
-        B[/Imprimir "Escriba el mensaje para encriptar"/] -->C
-        C[/Leer msg/]-->D
-        D[/Imprimir "Ingrese la clave para encripción"/]-->E
-        E[/Leer key/]-->F
-        F[Convertir de msg a binario]-->G
-        G[Convertir de key a binario]-->H
-        H[Separar msg en una lista]-->I
-        I[Separar key en una lista]-->J
-        J[Inicializar i=0]-->K
-        K[Inicializar j=0]-->L
-        L{i < cantidad de elementos en msg}
-        L-- SI -->M
-        L-- NO -->T
-        M{msg i = key j}
-        M-- SI -->N
-        M-- NO -->O
-        N[Agregar 0 a lista msg_enc]
-        O[Agregar 1 a lista msg_enc]
-        N-->P
-        O-->P
-        P[i= i+1]-->Q
-        Q{j= cantidad de elementos en key}
-        Q -- SI -->R
-        Q-- NO -->S
-        R[j = -1]-->S
-        S[j= j+1]-->L
-        T[Unión de msg_enc en un string]-->U
-        U[Convertir de msg_enc a alfanumerico]-->V
-        V[Retornar msg_enc]-->W([ ])
-```
-
-Para descifrar hay que inferir el bit original de acuerdi a la logica XOR
-
-```mermaid
-    flowchart TD
-        A([Descifrar mensaje con cifrado XOR]) --> B
-        B[/Escribir "Ingresa el mensaje cifrado"/]-->C
-        C[/Leer enc/]-->D
-        D[Convertir enc a binario]-->E
-        E[Separar enc en la lista enc]-->F
-        F[/Escribir "Ingrese la clave"/]-->G
-        G[/Leer key/]-->H
-        H[Convertir key a binario]-->I
-        I[Separar key en la lista key]-->J
-        J[Inicializar i=0]-->K
-        K[Inicializar j=0]-->L
-        L{i< cantidad de elementos en enc}
-        L-- SI -->M
-        L-- NO -->X
-        M{enc i = 0}
-        M-- SI-->N
-        M-- NO -->Q
-        N{key j = 0}
-        N-- SI-->O
-        N-- NO -->P
-        O[Añadir 1 a la lista dec]-->T
-        P[Añadir 0 a la lista dec]-->T
-        Q{key j=1}
-        Q-- SI -->R
-        Q-- NO -->S
-        R[Añadir 1 a la lista dec]-->T
-        S[Añadir 0 a la lista dec]-->T
-        T[i=i+1]-->U
-        U{j= cantidad de elementos en key}
-        U -- SI -->V
-        U-- NO -->W
-        V[j = -1]-->W
-        W[j=j+1]-->L
-        X[Unión de dec en un string]-->Y
-        Y[Convertir dec a alfanumerico]-->Z
-        Z[Retornar dec]-->AA
-        AA([ ])
 ```
 
 ## Bifid
