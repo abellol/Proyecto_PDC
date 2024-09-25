@@ -558,61 +558,84 @@ Se descifrado es simetrico, aunque la manera de operar el str ingresado original
         R([ ])
 ```
 
-## Porta
-
-Cifrado basado en varios abecedarios
-
+## Cifrafo Vernam
 ```mermaid
-      flowchart TD
-        A([Cifrar mensaje con cifrado Porta]) --> B
-        B[/Escribir "Escriba el mensaje para encriptar"/]-->C
-        C[/Leer msg/]-->D
-        D[/Escribir "Ingresa la clave"/]-->E
-        E[/Leer key/]-->FA
-        FA[[Crear matriz de abecedarios con la clave]]-->F
-        F[Separar key y msg en listas key y msg]-->G
-        G[Inicializar i,j=0]-->H
-        H{i < elementos en msg}
-        H-- SI-->I
-        H-- NO-->N
-        I[Añadir el elemento corresponndiente al i de msg de la fila j correspondiente a la clave a la lista msg_enc]-->J
-        J[i=i+1]-->K
-        K{j=Cantidad de elementos en key}
-        K-- SI-->L
-        K-- NO -->M
-        L[j=-1]-->M
-        M[j=j+1]-->H
-        N[Unir msg_enc en un string]-->O
-        O[Retornar msg_enc]-->P
-        P([ ])
+flowchart TD
+    A([CIFRADO VERNAM])
+    subgraph caracteres_a_numeros
+    direction LR
+    E["`Aa
+    Bb
+    Cc
+    ...
+    Zz
+    H o l a
+    U n o `"]
+    F["`0
+    1
+    2
+    ...
+    25
+    7 14 11 0
+    20 13 14`"]
+    E --> F
+    end
+    subgraph relleno_de_cadena
+    H["` cadena: Hola mundo
+    clave: uno`"]
+    I["`H o l a   m u n d o
+    u n o u   n o u n o`"]
+    H --> I
+    end
+    B[/ingreso de la cadena a encriptar/]
+    C[/ingreso de clave para la cadena/]
+    D[repetir la clave hasta completar la longitud de la cadena]
+    G[paso de caracteres a numeros]
+    J[Operacion XOR sobre los binarios de cada caracter]
+    subgraph XOR
+    K["` 7 = 0 0 1 1 1
+    20 = 1 0 1 0 0`"]
+    L[1 0 0 1 1 = 19]
+    K --> L
+    end
+    M["`Paso del valor numerico a caracter
+    19 = t`"]
+    U{¿El valor recibido es mayor a 26?}
+    V[Si]
+    W[No]
+    X[restar 26 al valor recibido]
+    N[se agrega el caracter codificado a una nueva cadena]
+    O{¿ya se codificaron todos los caracteres?}
+    P[Si]
+    Q[No]
+    R[/cadena codificada/]
+    S(siguiente caracter)
+    T([fin])
+
+    A --> B
+    B --> C
+    C --> D
+    D --> relleno_de_cadena
+    relleno_de_cadena --> G
+    G --> caracteres_a_numeros
+    caracteres_a_numeros --> J
+    J --> XOR
+    XOR --> M
+    M --> U
+    U --> V
+    U --> W
+    V --> X
+    X --> N
+    W --> N
+    N --> O
+    O --> P
+    O --> Q
+    Q --> S
+    S --> J
+    P --> R
+    R --> T
 ```
 
-Su descifrado es simetrico pero el proceso de busqueda en las listas es inverso
-
-   ```mermaid
-           flowchart TD
-        A([Descifrar mensaje con cifrado Porta]) --> B
-        B[/Escribir "Escriba el mensaje cifrado"/]-->C
-        C[/Leer enc/]-->D
-        D[/Escribir "Ingresa la clave"/]-->E
-        E[/Leer key/]-->FA
-        FA[[Crear matriz de abecedarios con la clave]]-->F
-        F[Separar key y enc en listas key y enc]-->G
-        G[Inicializar i,j=0]-->H
-        H{i < elementos en enc}
-        H-- SI-->I
-        H-- NO-->N
-        I[Añadir el elemento corresponndiente al i de enc del abecedario original de acuerdo a la fila j de key a dec]-->J
-        J[i=i+1]-->K
-        K{j=Cantidad de elementos en key}
-        K-- SI-->L
-        K-- NO -->M
-        L[j=-1]-->M
-        M[j=j+1]-->H
-        N[Unir dec en un string]-->O
-        O[Retornar dec]-->P
-        P([ ])
-```
 # ////////////////////////////////////////
 
 ```python
